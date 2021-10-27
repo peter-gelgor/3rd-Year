@@ -172,7 +172,37 @@ type Context = [Formula]
 --   otherwise, return False.
 prove :: Context -> Formula -> Bool
 prove ctx phi =
-  undefined
+  if (find (\x -> x == phi) ctx /= Nothing) then True else --UseAssumption
+    if (ctx == [] && phi == Top) then True else --Top-Right
+      if (phi == And psi1 psi2 && (prove ctx psi1) && (prove ctx psi2)) then True else --And-Right
+
+
+UseAssumption :: Context -> Formula -> Bool
+UseAssumption ctx phi = if (find (\x -> x == phi) ctx /= Nothing) then True else False
+
+TopRight :: Context -> Formula -> Bool
+TopRight ctx phi = if (ctx == [] && phi == Top) then True else False
+
+AndRight :: Context -> Formula -> Boolean
+AndRight ctx phi = if (phi == And psi1 psi2 && (prove ctx psi1) && (prove ctx psi2)) then True else False
+
+-- gotta do implies-right
+
+-- gotta do equiv-right
+
+OrRight :: Context -> Formula -> Bool -- should cover both 1 and 2
+OrRight ctx phi = if (phi == Or psi1 psi2 && ((prove ctx psi1) || (prove ctx psi2))) then True else False
+    
+BotLeft :: Context -> Formula -> Bool
+BotLeft ctx phi = if (find (\x -> x == Bot) ctx /= Nothing) then True else False
+
+AndLeft :: Context -> Formula -> Bool
+AndLeft ctx phi = if (ctx == (ctx1 ++ [phi1, phi2] ++ ctx2) && phi == (ctx1 ++ [And phi1 phi2] ++ ctx2)) then True else False
+
+-- gotta do implies-left
+-- gotta do equiv-left
+
+  
 
 
 -- decompose ctx1 ctx2
@@ -236,5 +266,3 @@ test_decompose2 = prove [And vA (And vB vC)] (And vA vC)
    If you choose to attempt the bonus, write your solutions below.
    See a3.pdf for instructions.
 -}
-
-{- more testing -}
