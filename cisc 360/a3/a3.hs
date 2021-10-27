@@ -236,5 +236,3 @@ test_decompose2 = prove [And vA (And vB vC)] (And vA vC)
    If you choose to attempt the bonus, write your solutions below.
    See a3.pdf for instructions.
 -}
-
-{- here is a comment to see if this works-}
