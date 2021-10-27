@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search demo</title>
+    <script>
+        // Test lists
+        var word_list = ["cat", "duck", "frog", "rat", "unicorn"];
+        var number_list = [-12, -7, 0, 4, 5, 10];
+
+        function find(a, val) {
+            // Return the position of val in array a or the length
+            // of a if val is missing from a.
+            var n = a.length;
+            var low = 0;
+            var high = n - 1;
+            while (low <= high) {
+                var mid = Math.floor((low + high) / 2);
+                if (a[mid] == val) {
+                    return mid;
+                }
+                else if (a[mid] < val) {
+                    low = mid + 1;
+                }
+                else {
+                    high = mid - 1;
+                }
+            }
+            return n;
+        }
+
+        function report_result(a, val) {
+            var pos = find(a, val);
+            var list = a.join(", ");
+            if (pos < a.length) {
+                alert(val + " is at position " + pos + " in " + list + ".");
+            } else {
+                alert(val + " is not in " + list + ".");
+            }
+        }
+
+        // Test code
+        report_result (word_list, "cat"); // found
+        report_result (word_list, "cow"); // not found
+        report_result (word_list, "rat"); // found
+        report_result (number_list, 0); // found
+        report_result (number_list, 10); // found
+        report_result (number_list, -11); // not found
+    </script>
+</head>
+<body>
+</body>
+</html>

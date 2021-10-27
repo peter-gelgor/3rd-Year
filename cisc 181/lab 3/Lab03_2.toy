@@ -1,0 +1,16 @@
+top     get
+        ifzero show
+        print
+        add sum
+        store sum
+        load count
+        add 1
+        store count
+        goto top
+show    load sum
+        print
+        load count
+        print
+        stop
+sum     0
+count   0

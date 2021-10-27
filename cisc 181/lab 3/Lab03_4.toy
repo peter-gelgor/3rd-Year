@@ -1,0 +1,47 @@
+top     get
+        ifzero zeros
+        store num
+        store neg
+        load 0
+        sub neg
+        ifpos show
+        load num
+        print
+        add sum
+        store sum
+        load count
+        add 1
+        store count
+        goto top
+show    load sum
+        print
+        load count
+        print
+calcavg load sum
+        ifpos cont
+        goto showavg
+cont    store rem
+        sub count
+        store sum
+        ifpos incavg
+        goto calcavg
+incavg  load avg
+        add 1
+        store avg
+        goto calcavg
+showavg load avg
+        print
+        load rem
+        print
+        stop
+zeros   print 
+        load count
+        add 1
+        store count
+        goto top
+sum     0
+count   0
+avg     0
+rem     0
+num     0
+neg     0

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>The Bean Counter</title>
+	<link rel="stylesheet" type="text/css" href="https://sites.cs.queensu.ca/courses/cisc181/beancounter.css">
+	<script>
+		var taxRate = 0.13;
+		var shotPrice = 0.50;
+		var espressoPrice = 1.40;
+		var specialtyPrice = 1.95;
+		var specialtySizeIncrement = 0.40;
+		var canadianoPrice =  1.50;
+		var canadianoSizeIncrement = 0.15;
+		var	acc = "";
+		var shots = 1;
+		var cupSize = 0;
+		var shortSize = 8;
+		var tallSize = 12;
+		var grandeSize = 16;
+		var drinkType = "";
+		var subtl = 0.00;
+		var price = 0.00;
+		var staffDiscountRate = 0.06;
+		
+		function clearAll () {
+			acc = "";
+			shots = 1;
+			drinkType = "";
+			cupSize = 0;
+			subtl = 0.00;
+			price = 0.00;
+			document.getElementById("keypACC").value = "0";
+			document.getElementById("subtotal").value = "$0.00";
+			document.getElementById("tax").value = "$0.00";
+			document.getElementById("amountOwing").value = "$0.00";
+			if (document.getElementById("staffDiscountCheckbox")) {
+				document.getElementById("staffDiscount").value = "$0.00";
+				document.getElementById("staffDiscountCheckbox").checked = false;
+			}
+		}
+		
+		function keyp (k) {
+			if (k == "0") {
+				if (parseFloat(acc) != 0 || acc.indexOf(".") != -1) {
+					acc = acc + "0";
+				}
+			}
+			else if (k > "0" && k <= "9") {
+				if (document.getElementById("keypACC").value == "0") {
+					acc = k;
+				}
+				else {
+					acc = "" + acc + k;
+				}
+			}
+			else if (k == ".") {
+				if (acc.indexOf(".") == -1) {
+					acc = acc + k;
+					if (acc == k) { // in the case of the accumulator showing "0"
+						acc = "0" + k;
+					}
+				}
+			}
+			else if (k == "backspace") {
+				acc = acc.substring (0, acc.length - 1);
+				if (acc == "") {
+					acc = "0";
+				}
+			}
+			else if (k == "Clear") {
+				acc = "0";
+			}
+			document.getElementById("keypACC").value = acc;
+		}
+		
+		function formatPrice (amount) {
+			var tmp = new Number(amount);
+			return tmp.toFixed(2);
+		}
+		
+		function enterItem () {
+			var itemPrice = 0.00;
+			if (drinkType == "espresso") {
+				itemPrice = espressoPrice;
+			}
+			else if (drinkType == "latte" || drinkType == "cappuccino") {
+				itemPrice = specialtyPrice + (cupSize - 8) / 4 * specialtySizeIncrement;
+			}
+			else if (drinkType == "canadiano") {
+				itemPrice = canadianoPrice + (cupSize - 8) / 4 * canadianoSizeIncrement;
+			}
+			var qty = parseInt(document.getElementById("keypACC").value);
+			if (qty > 0 && itemPrice > 0.00) { // Must have at least one item costing more than $0.00
+				subtl = subtl + qty * (itemPrice + (shots - 1) * .50);
+				document.getElementById("subtotal").value = "$" + formatPrice (subtl);
+				document.getElementById("keypACC").value = "0";
+				acc = "";
+				shots = 1;
+				drinkType = "";
+				cupSize = 0;
+			}
+		}
+
+		function calculateTotal () {
+			var staffDiscount = 0.00;
+			if (document.getElementById("staffDiscountCheckbox").checked) {
+				staffDiscount = Math.round(subtl * staffDiscountRate * 100)/100;
+			}
+			document.getElementById("staffDiscount").value = "$" + formatPrice(staffDiscount);
+			var taxes = Math.round((subtl - staffDiscount) * taxRate * 100)/100;
+			document.getElementById("tax").value = "$" + formatPrice(taxes);
+			document.getElementById("amountOwing").value = 
+			"$" + formatPrice(subtl - staffDiscount + taxes); 
+		}
+
+
+		// This function attaches "listener" functions to HTML user interface elements
+		function activateUserControls () {
+			// Attach keypad digit buttons to listeners. (Tricky syntax to do this in a loop!)
+			var i = 0;
+			while (i < 10) {
+				(function(_i) {
+					document.getElementById("keyp" + i).addEventListener("click", function(){
+						keyp(_i);
+					});
+				})(i);
+				i++;
+			}
+			document.getElementById("keypBS").addEventListener("click", function() {
+				keyp("backspace");
+			});
+			// Attach "Shots (of espresso)" buttons to listeners.
+			i = 1;
+			while (i < 5) {
+				(function (_i) {
+					document.getElementById("shots" + i).addEventListener("click", function(){
+						shots = _i;
+					});
+				})(i);
+				i++;
+			}
+			// Attach "Cup Size" buttons to listeners.
+			document.getElementById("cupSizeShort").addEventListener("click", function(){
+				cupSize = shortSize;
+			});
+			document.getElementById("cupSizeTall").addEventListener("click", function(){
+				cupSize = tallSize;
+			});
+			document.getElementById("cupSizeGrande").addEventListener("click", function(){
+				cupSize = grandeSize;
+			});
+			// Attach "Drink Type" buttons to listeners.
+			document.getElementById("drinkTypeEspresso").addEventListener("click", function(){
+				drinkType = 'espresso';
+			});
+			document.getElementById("drinkTypeLatte").addEventListener("click", function(){
+				drinkType = 'latte';
+			});
+			document.getElementById("drinkTypeCappuccino").addEventListener("click", function(){
+				drinkType = 'cappuccino';
+			});
+			document.getElementById("drinkTypeCanadiano").addEventListener("click", function(){
+				drinkType = 'canadiano';
+			});
+			// Attach "Calculations" buttons to listeners.
+			document.getElementById("enterItem").addEventListener("click", enterItem);
+			document.getElementById("calculateTotal").addEventListener("click", calculateTotal);
+			document.getElementById("clearAll").addEventListener("click", clearAll);
+		}
+		
+		window.onload = activateUserControls;
+	</script>
+
+</head>
+
+<body>
+	<div id="container">
+		<div id="liner">
+			<h1>Welcome to Linley's Java(Script)-O-Rama</h1>
+			<form>
+				<fieldset id="quantityGroup">
+					<legend>Quantity</legend>
+					<input type="button" id="keyp1" value="1">
+					<input type="button" id="keyp2" value="2">
+					<input type="button" id="keyp3" value="3">
+					<input type="button" id="keyp4" value="4">					
+					<input type="button" id="keyp5" value="5">
+					<input type="button" id="keyp6" value="6">
+					<input type="button" id="keyp7" value="7">
+					<input type="button" id="keyp8" value="8">					
+					<input type="button" id="keyp9" value="9">
+					<input type="button" id="keyp0" value="0">
+					<input type="button" id="keypBS" value=&larr;>
+					<input type="text" id="keypACC" value="0" readonly>
+				</fieldset>
+				<fieldset id="shotsGroup">
+					<legend>Shots (of espresso)</legend>
+					<input type="button" id="shots1" value="1">
+					<input type="button" id="shots2" value="2">
+					<input type="button" id="shots3" value="3">
+					<input type="button" id="shots4" value="4">
+				</fieldset>
+				<fieldset id="cupSizeGroup">
+					<legend>Cup Size</legend>
+					<input type="button" id="cupSizeShort" value="Short">
+					<input type="button" id="cupSizeTall" value="Tall">
+					<input type="button" id="cupSizeGrande" value="Grande">
+				</fieldset>
+				<fieldset id="drinkTypeGroup">
+					<legend>Drink Type</legend>
+					<input type="button" id="drinkTypeEspresso" value="ESPRESSO">
+					<input type="button" id="drinkTypeLatte" value="LATTE">
+					<input type="button" id="drinkTypeCappuccino" value="CAPPUCCINO">
+					<input type="button" id="drinkTypeCanadiano" value="CANADIANO">
+				</fieldset>
+				<fieldset id="calculationsGroup">
+					<legend>Calculations</legend>
+					<input type="button" id="enterItem" value="Enter">
+					<label for="staffDiscountCheckbox">
+						<input type="checkbox" id="staffDiscountCheckbox">
+						Staff discount
+					</label>
+					<input type="button" id="calculateTotal" value="Total">
+					<input type="button" id="clearAll" value="Clear">
+				</fieldset>
+				<fieldset id="amountsOwingGroup">
+					<legend>Amounts Owing</legend>
+					<input class="number" type="text" id="subtotal" value="$0.00" readonly>
+					<label for="subtotal">Subtotal</label>
+					<input class="number" type="text" id="staffDiscount" value="$0.00" readonly>
+					<label for="staffDiscount">Staff Disc</label>
+					<input class="number" type="text" id="tax" value="$0.00" readonly>
+					<label for="tax">Tax</label>
+					<input class="number" type="text" id="amountOwing" value="$0.00" readonly>
+					<label for="amountOwing">Total</label>
+				</fieldset>
+			</form>
+		</div> <!-- liner -->
+	</div> <!-- container -->
+	<div id="footer">
+		<p>Based on an example used in <em>Fluency with Information Technology: Skills, Concepts, and Capabilities</em>, 4/e, by Lawrence Snyder (ISBN 0-13-609182-2).</p>
+	</div>
+</body>
+</html>

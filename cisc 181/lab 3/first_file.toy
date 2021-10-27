@@ -1,0 +1,5 @@
+top     get
+        ifzero bottom
+        print
+        goto top
+bottom  stop
