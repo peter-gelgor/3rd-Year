@@ -237,4 +237,4 @@ test_decompose2 = prove [And vA (And vB vC)] (And vA vC)
    See a3.pdf for instructions.
 -}
 
-{- does this work? -}
+{- more testing -}
