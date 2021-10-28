@@ -3,7 +3,7 @@ import java.util.concurrent.CountDownLatch;
 //The content of this file defines a Java main class named 'ThreadAttacker' 
 //This class contains the main method from where the whole program (project) 
 //starts its execution
-//can i edit from github and get to vscode?
+//yes i can
 
 public class ThreadAttacker {
 
