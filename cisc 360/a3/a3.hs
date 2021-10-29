@@ -171,37 +171,12 @@ type Context = [Formula]
 --    the formula phi is true according to the rules given in a3.pdf.
 --   otherwise, return False.
 prove :: Context -> Formula -> Bool
-prove ctx phi =
-  if (find (\x -> x == phi) ctx /= Nothing) then True else --UseAssumption
-    if (ctx == [] && phi == Top) then True else --Top-Right
-      if (phi == And psi1 psi2 && (prove ctx psi1) && (prove ctx psi2)) then True else --And-Right
-
-
-UseAssumption :: Context -> Formula -> Bool
-UseAssumption ctx phi = if (find (\x -> x == phi) ctx /= Nothing) then True else False
-
-TopRight :: Context -> Formula -> Bool
-TopRight ctx phi = if (ctx == [] && phi == Top) then True else False
-
-AndRight :: Context -> Formula -> Boolean
-AndRight ctx phi = if (phi == And psi1 psi2 && (prove ctx psi1) && (prove ctx psi2)) then True else False
-
--- gotta do implies-right
-
--- gotta do equiv-right
-
-OrRight :: Context -> Formula -> Bool -- should cover both 1 and 2
-OrRight ctx phi = if (phi == Or psi1 psi2 && ((prove ctx psi1) || (prove ctx psi2))) then True else False
+prove ctx phi = (find (\x -> x == phi) (decompose [] ctx)) /= Nothing || 
+  find (\x -> x == Bot) (decompose [] ctx) /= Nothing ||
+  prove_right (decompose [] ctx) phi
+  
     
-BotLeft :: Context -> Formula -> Bool
-BotLeft ctx phi = if (find (\x -> x == Bot) ctx /= Nothing) then True else False
-
-AndLeft :: Context -> Formula -> Bool
-AndLeft ctx phi = if (ctx == (ctx1 ++ [phi1, phi2] ++ ctx2) && phi == (ctx1 ++ [And phi1 phi2] ++ ctx2)) then True else False
-
--- gotta do implies-left
--- gotta do equiv-left
-
+  
   
 
 
@@ -216,9 +191,9 @@ decompose :: Context -> Context -> Context
 decompose ctx1 []              = ctx1
 decompose ctx1 (middle : ctx2) =
   case middle of
-    And phi1 phi2     -> undefined
-    Implies phi1 phi2 -> undefined
-    Equiv phi1 phi2   -> undefined
+    And phi1 phi2     -> decompose (ctx1) (ctx2 ++ [phi1, phi2])
+    Implies phi1 phi2 -> if (prove (ctx1 ++ ctx2) phi1) then decompose (ctx1) (ctx2 ++ [phi2]) else decompose (ctx1 ++ [middle]) (ctx2)
+    Equiv phi1 phi2   -> decompose ctx1 (ctx2 ++ [Implies phi1 phi2, Implies phi2 phi1])
 
     middle            -> decompose (ctx1 ++ [middle]) ctx2
 
@@ -236,9 +211,9 @@ prove_right :: Context -> Formula -> Bool
 
 prove_right ctx Top               = True     -- Top-Right
 
-prove_right ctx (And phi1 phi2)   = undefined
+prove_right ctx (And phi1 phi2)   = find (\x -> x == phi1) ctx /= Nothing && find (\x -> x == phi2) ctx /= Nothing
 
-prove_right ctx (Or phi1 phi2)    = undefined
+prove_right ctx (Or phi1 phi2)    = find (\x -> x == phi1) ctx /= Nothing || find (\x -> x == phi2) ctx /= Nothing
 
 prove_right ctx (Implies phi psi) =
   -- try to apply Implies-Right
@@ -246,7 +221,7 @@ prove_right ctx (Implies phi psi) =
 
 prove_right ctx (Equiv phi1 phi2) =
   -- try to apply Equiv-Right
-  undefined
+  prove (phi1 : ctx) phi2 && prove (phi2 : ctx) phi1
 
 prove_right ctx p                 =
   -- couldn't apply any of the -Right rules, so give up
