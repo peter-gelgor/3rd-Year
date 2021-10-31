@@ -21,7 +21,7 @@ public class ThreadBots extends Thread
 	
 	public void run()
 	{
-		
+
 		String curPassword = "";
 		char[] letters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
 		outerloop:
@@ -40,13 +40,7 @@ public class ThreadBots extends Thread
 							System.out.println("Thread" + this.Identity + " creacked the password with password: " + curPassword);
 							ThreadAttacker.found = true;
 							break outerloop;
-							
 						}
-
-						
-						
-
-						
 					}
 				}
 			}

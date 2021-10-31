@@ -1,4 +1,4 @@
-import java.util.concurrent.CountDownLatch;
+
 
 //The content of this file defines a Java main class named 'ThreadAttacker' 
 //This class contains the main method from where the whole program (project) 
@@ -16,7 +16,6 @@ public class ThreadAttacker {
 	//This is the variable that will be used by the thread to inform each other that the password has been cracked
 	//For instance, if a thread cracks the password, it update the value of this variable to true
 	public static volatile boolean found = false;
-	public static volatile CountDownLatch latch = new CountDownLatch(3);
 
 	//The main method, here starts the execution	
 	public static void main(String[] args) throws InterruptedException 
@@ -69,14 +68,13 @@ public class ThreadAttacker {
 	public static String nonThreaded(char[] firstLetters){
 		
 		char[] letters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
-		outerloop:
 		for (int i = 0; i < firstLetters.length; i++){
 			for (int j = 0; j < letters.length; j++){
 				for (int k = 0; k < letters.length; k++) {
 					for (int l = 0; l < letters.length; l++) {
 						for (int m = 0; m < letters.length; m++){
 							if ((new String(new char[] {firstLetters[i], letters[j], letters[k], letters[l], letters[m]}) + challenge).hashCode() == captured) {
-								// System.out.println("found");
+								System.out.println("found");
 								return (new String(new char[] {firstLetters[i], letters[j], letters[k], letters[l], letters[m]}) + challenge);
 							}
 						}
