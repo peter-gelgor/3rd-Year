@@ -1,3 +1,5 @@
+import javax.sound.sampled.SourceDataLine;
+
 // This file defines class "writer".
 
 // This code uses
@@ -27,15 +29,49 @@ public class Writer extends Thread {
 
   public void run () {
     for (int I = 0;  I < 5; I++) {
+      System.out.println("writerQueue = " + Synch.writerQueue + " activeWriters = " + Synch.activeWriters);
 
       // Get permission to write
       System.out.println("Writer " + myName + " wants to write");
+
+      //block readers from reading
+      try {
+        Synch.readBlock.acquire();
+      } catch (InterruptedException e2) {
+        // TODO Auto-generated catch block
+        e2.printStackTrace();
+      }
+
+      //add to writer queue
+      try {
+        Synch.mutex.acquire();
+      } catch (InterruptedException e1) {
+        // TODO Auto-generated catch block
+        e1.printStackTrace();
+      }
+      Synch.writerQueue ++;
+      Synch.mutex.release();
       try{
+
       	Synch.wrt.acquire();
       }
       catch(Exception e){}
+
+      //decrement the writer queue
+      try {
+        Synch.mutex.acquire();
+      } catch (InterruptedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      Synch.writerQueue --;
+      Synch.activeWriters ++;
+
+      Synch.mutex.release();
+
+
       // Simulate the time taken by writing.
-      System.out.println("Writer " + myName + " is now writing");
+      System.out.println("Writer " + myName + " is now writing, writerqueue = " + Synch.writerQueue);
       rSleep.doSleep(1, 200);
 
       // We're done writing.  Signal the "wrt" semaphore.  If a Reader thread
@@ -46,6 +82,22 @@ public class Writer extends Thread {
       // reader or writer can go without waiting.
       System.out.println("Writer " + myName + " is finished writing");
       Synch.wrt.release();
+
+      // subtract from active writers
+      try {
+        Synch.mutex.acquire();
+      } catch (InterruptedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      Synch.activeWriters --;
+      Synch.mutex.release();
+
+      if (Synch.activeWriters + Synch.writerQueue < 1) {
+        Synch.readBlock.release();
+      }
+      
+
 
       // Simulate "doing something else"
       rSleep.doSleep(1, 1000);
