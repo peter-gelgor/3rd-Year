@@ -44,19 +44,20 @@ isPrime(N, pr) :- N > 2, \+ hasFactor(N, 2).
   Q2a. Replace the word "change_this" in the rules below.
        Hint:  Try to use  findPrimes(Xs, Ys).
 */
-findPrimes([], []) :- []
+findPrimes([], []).
 
 % In this rule, we include X in the output: [X | Ys].
 % So this rule should check that X is prime.
 findPrimes([X | Xs], [X | Ys]) :-
-  isPrime(X, pr) -> append([X], findPrimes(Xs, Ys), Ys);
+  isPrime(X, pr),
+  % append(X, Ys, Primes),
   findPrimes(Xs, Ys).
 
 % In this rule, we do not include X in the output.
 % So this rule should check that X is composite.
 findPrimes([X | Xs], Ys) :-
-  isPrime(X, co) -> findPrimes(Xs, Ys);
-  append([X], findPrimes(Xs, Ys), Ys).
+  isPrime(X, co),
+  findPrimes(Xs, Ys).
 
 /*
   upto(X, Y, Zs):
@@ -84,7 +85,8 @@ upto(X, Y, [X | Zs]) :-
 */
 
 primes_range(M, N, Primes) :-
-   change_this.
+  upto(M, N, Range),
+  findPrimes(Range, Primes).
 
 
 /*
@@ -135,10 +137,18 @@ such that  spiral(S, D, R) is true  iff  R = (spiral S D)
 */
 
 spiral(Span, _, 1) :-
-  change_this.
+  Span == 0 -> true;
+  false.
 
 spiral(Span, Dir, R) :-
-  change_this.
+  Span > 0,
+  SpanMinus1 is Span - 1,
+  ZeroMinusDir is 0 - Dir,
+  spiral(SpanMinus1, ZeroMinusDir, R1),
+  Product is Span * Dir,
+  R is Product * R1.
+
+
 
 /*
   To test: ?- spiral(6, 10, -720000000).
@@ -235,7 +245,11 @@ For example, you should get
 
 postorder(leaf(K), [K]).
 
-
+postorder(node(K, L, R), Keys) :-
+  postorder(L, Lkeys),
+  postorder(R, Rkeys),
+  append(Lkeys, Rkeys, Midkeys),
+  append(Midkeys, [K], Keys).
 
 
 /*
@@ -290,3 +304,10 @@ Q4b.  In-order and post-order traversals are paths through the entire tree.
 
 findpath(leaf(K), [K]).
 
+findpath(node(K, L, R), Path) :-
+  findpath(L, Lpath),
+  append(Lpath, [K], Path).
+
+findpath(node(K, L, R), Path) :-
+  findpath(R, Rpath),
+  append(Rpath, [K], Path).
