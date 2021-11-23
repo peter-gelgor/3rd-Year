@@ -26,7 +26,7 @@ public class Car extends Thread {
 
 
   public void run () {
-    for (int I=1;  I<= 4; I++) {
+    for (int I=1;  I<= 2; I++) {
 
       // Simulate driving around Barriefield.
       System.out.println("At time " + Synch.timeSim.curTime() + " Car "+ myName + " is driving around Barriefield.\n");
