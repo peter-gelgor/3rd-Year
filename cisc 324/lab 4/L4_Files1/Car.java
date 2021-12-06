@@ -47,6 +47,26 @@ public class Car extends Thread {
 	  //     of you get going, so you have to keep waiting even though the light is green.
 	  //     In some cases, you don't even make it across on this green; you have to 
 	  //     wait through another red cycle for the next green.
+
+    try {
+      Synch.mutex.acquire();
+    } catch (Exception e){}
+    
+    //if westbound light is red
+    if (Synch.light != 2){
+      Synch.westCars++;
+      Synch.mutex.release();
+      //car can't continue until light turns green and lets westbound cars go
+        try {
+          Synch.west.acquire();
+        } catch (Exception e){}
+        try {
+          Synch.mutex.acquire();
+        } catch (Exception e){}
+      Synch.westCars--;
+    }
+    Synch.mutex.release();
+
 	  
 
       // Now we have permission to cross the causeway.  Crossing is simulated
@@ -67,11 +87,40 @@ public class Car extends Thread {
       // *** Put synchronization code here, to make cars wait if the eastbound
       // *** light is red..
 
+      try {
+        Synch.mutex.acquire();
+      } catch (Exception e){}
+      
+      //if eastbound light is red
+      if (Synch.light != 1){
+        Synch.eastCars++;
+        Synch.mutex.release();
+        //car can't continue until light turns green and lets east cars go
+          try {
+            Synch.east.acquire();
+          } catch (Exception e){}
+          try {
+            Synch.mutex.acquire();
+          } catch (Exception e){}
+        Synch.eastCars--;
+      }
+      Synch.mutex.release();
+      //light is now red
+
       System.out.println("At time " + Synch.timeSim.curTime() + " Car "+ myName + " is starting to cross eastbound.\n");
       Synch.timeSim.doSleep(100);
 
     } // end of "for" loop
     System.out.println("At time " + Synch.timeSim.curTime() + " Car "+ myName + " has stoped and its driver went out.\n");
+    Synch.finished ++;
+    try {
+      Synch.mutex.acquire();
+    }
+    catch (Exception e){}
+    if (Synch.finished == 8) {
+      Synch.traffic = false;
+    }
+    Synch.mutex.release();
     Synch.timeSim.threadEnd();  // Let timeSim know that this thread
                                 // has ended.
   }  // end of "run" method

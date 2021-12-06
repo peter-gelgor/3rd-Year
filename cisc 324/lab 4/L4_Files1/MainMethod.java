@@ -35,9 +35,14 @@ public class MainMethod {
     // *** This declaration of semaphore "mutex" is here to remind you how
     // *** to declare semaphores.
     Synch.mutex = new Semaphore(1, true);
+    Synch.east = new Semaphore(0, true);
+    Synch.west = new Semaphore(0, true);
 
     // Create several instances of Car threads
     Car C;  // C can hold an instance of class Car
+    Synch.traffic = true;
+    Light L = new Light();
+    L.start();
 
     for (int i=1; i<=8; i++) {
       C = new Car(i);

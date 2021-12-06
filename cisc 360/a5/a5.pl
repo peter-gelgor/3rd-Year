@@ -5,7 +5,7 @@
 /*
  * Q1: Student ID
  */
-student_id( this is a syntax error ).
+student_id( 20156086 ).
 % other_student_id(  ).
 % if in a group, uncomment the above line and put the other student ID here
 
@@ -109,19 +109,32 @@ getAtoms( top, []).
 getAtoms( bot, []).
 getAtoms( v(V), [V]).
 getAtoms( and(Q1, Q2), Vs) :-
-    change_this.
+    getAtoms(Q1, V1),
+    getAtoms(Q2, V2),
+    append(V1, V2, Va),
+    nub(Va, Vs).
 
 getAtoms( or(Q1, Q2), Vs) :-
-    change_this.
+    getAtoms(Q1, V1),
+    getAtoms(Q2, V2),
+    append(V1, V2, Va),
+    nub(Va, Vs).
 
 getAtoms( implies(Q1, Q2), Vs) :-
-    change_this.
+    getAtoms(Q1, V1),
+    getAtoms(Q2, V2),
+    append(V1, V2, Va),
+    nub(Va, Vs).
 
 getAtoms( equiv(Q1, Q2), Vs) :-
-    change_this.
+    getAtoms(Q1, V1),
+    getAtoms(Q2, V2),
+    append(V1, V2, Va),
+    nub(Va, Vs).
 
 getAtoms( not(Q1), Vs) :-
-    change_this.
+    getAtoms(Q1, Va),
+    nub(Va, Vs).
 
 /*
   Q2b: oneValuation
@@ -131,7 +144,8 @@ is_bool(false).    %  its argument is a Boolean ('true' or 'false').
 
 oneValuation([], []).
 oneValuation([V | Vs], [(V, B) | Vs_Valuation]) :-
-   change_this.
+  is_bool(B),
+  oneValuation(Vs, Vs_Valuation).
 
 /*
   getValuations:
@@ -167,6 +181,16 @@ evalF( and(Q1, Q2), Valu, true)  :- evalF( Q1, Valu, true),
                                     evalF( Q2, Valu, true).
 evalF( and(Q1, _),  Valu, false) :- evalF( Q1, Valu, false).
 evalF( and(_, Q2),  Valu, false) :- evalF( Q2, Valu, false).
+
+evalF(implies(Q1, Q2), Valu, Result) :- evalF(Q1, Valu, false);
+                                        evalF(Q2, Valu, true).
+
+evalF(or(Q1, Q2), Valu, Result) :-  evalF(Q1, Valu, true);
+                                    evalF(Q2, Valu, true).
+
+evalF(not(Q1), Valu, Result) :- evalF(Q1, Valu, false), !.))
+evalF(equiv(Q1, Q2), Valu, Result) :- evalF(implies(Q1, Q2), Valu, Result),
+                                      evalF(implies(Q2, Q1), Valu, Result).                                  
 
 /* Q2c: Add rules for
 evalF( implies(..., ...), Valu, ...) :- ...
@@ -264,18 +288,23 @@ Q3a:
 
 % rule 'Bot-Left'
 % CONCLUSION:  Ctx1 ++ [bot] ++ Ctx2 |- Q
+prove(Ctx, P) :- member(bot, Ctx).
 
 
 % rule 'And-Right'
 % CONCLUSION:  Ctx |- and(Q1, Q2)
+prove(Ctx, and(Q1, Q2)) :-  prove(Ctx, Q1),
+                            prove(Ctx, Q2).
 
 
 % rule 'Implies-Right'
 % CONCLUSION:  Ctx |- implies(P, Q)
-
+prove(Ctx, implies(P, Q)) :- prove([P|Ctx], Q).
 
 % rule 'Equiv-Right'
 % CONCLUSION:  Ctx |- equiv(Q1, Q2)
+prove(Ctx, equiv(Q1, Q2)) :- prove([Q1|Ctx], Q2),
+                            prove([Q2|Ctx], Q1).
 
 
 % rule 'And-Left'
@@ -294,13 +323,17 @@ prove( Ctx, Q) :-
 %              Ctx1 ++ Ctx2 |- P1   Ctx1 ++ [P2] ++ Ctx2 |- Q
 %              ----------------------------------------------
 % CONCLUSION:  Ctx1 ++ [implies(P1, P2)] ++ Ctx2 |- Q
+prove(Ctx, implies(P1, P2)) :- prove(Ctx, P1),
+                              append(Ctx, [P2], CtxP2),
+                              prove(CtxP2, P2).
 
 
 % rule 'Equiv-Left'
 %              Ctx1 ++ Ctx2 |- P1   Ctx1 ++ [P2] ++ Ctx2 |- Q
 %              ----------------------------------------------
 % CONCLUSION:  Ctx1 ++ [implies(P1, P2)] ++ Ctx2 |- Q
-
+prove(Ctx, equiv(P1, P2)) :- prove(Ctx, implies(P1, P2)),
+                            prove(Ctx, implies(P2, P1)).
 
 /*
   ?- prove([implies(v(b), v(h))], implies(v(b), v(h))).
@@ -322,12 +355,23 @@ prove( Ctx, Q) :-
 % You can write this as two rules, or use ; if you like.
 % CONCLUSION:  Ctx |- or(P1, P2)
 
+prove(Ctx, or(P1, P2)) :- prove(Ctx, P1);
+                          prove(Ctx, P2).
+
 
 % rule 'Or-Left'
 %             Ctx1 ++ [P1] ++ Ctx2 |- Q   Ctx1 ++ [P2] ++ Ctx2 |- Q
 %             -----------------------------------------------------
 % CONCLUSION:            Ctx1 ++ [or(P1, P2)] ++ Ctx2 |- Q
+prove( Ctx, Q) :-
+  append3( Ctx1, or(P1, P2), Ctx2, Ctx),
+  append( Ctx1, [P1 | [P2 | Ctx2]], CtxP1),  
+  prove( CtxP1, Q).
 
+prove( Ctx, Q) :-
+  append3( Ctx1, or(P1, P2), Ctx2, Ctx),
+  append( Ctx1, [P1 | [P2 | Ctx2]], CtxP2),  
+  prove( CtxP2, Q).
 
 
 /*

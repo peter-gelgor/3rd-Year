@@ -16,6 +16,13 @@ public class Synch {
 // Which variables/semaphores you need depends on how you decide to code your solution.
     
     public static Semaphore mutex;   // example of a semaphore declaration; the initial value is given in MainMethod.java
+    public static Semaphore east;
+    public static Semaphore west;
+    public static int eastCars = 0;
+    public static int westCars = 0;
+    public static int light = 0; // 0 = red, 1 = east-green, 2 = west-green
+    public static boolean traffic;
+    public static int finished;
 
 
 
