@@ -38,7 +38,7 @@ public class Semaphore {
 		    semCounter--;
 		    semMutex.release();
 		
-			Synch.timeSim.threadComputationDoneForNow();
+			Stuff.timeSim.threadComputationDoneForNow();
 		       
 			try{
 				s.acquire();
@@ -57,7 +57,7 @@ public class Semaphore {
 	    if (semCounter < 0) {
 		    // semCounter is less than zero, so there are definitely threads waiting.  
 		    // Call timesim to let it know that one thread will be woken up.
-		    Synch.timeSim.threadComputationStarting();
+		    Stuff.timeSim.threadComputationStarting();
 		    semCounter++;
 		    s.release();
 	    }

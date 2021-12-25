@@ -25,22 +25,22 @@
 public class MainMethod {
   public static void main (String argv[]) {
 
-    Synch.timeSim = new TimeSim();  // timeSim provides accurate "sleep"
+    Stuff.timeSim = new TimeSim();  // timeSim provides accurate "sleep"
           // timing (in contrast to thread.sleep, which is highly variable)
-    Synch.debug=0;  // We don't want debug output from TimeSim.Java
+    Stuff.debug=0;  // We don't want debug output from TimeSim.Java
 
     // Initialize the semaphores and variables that are needed for thread
     // synchronization.
     // *** No semaphores are used in the car code, yet.  You will add some.
     // *** This declaration of semaphore "mutex" is here to remind you how
     // *** to declare semaphores.
-    Synch.mutex = new Semaphore(1, true);
-    Synch.east = new Semaphore(0, true);
-    Synch.west = new Semaphore(0, true);
+    Stuff.mutex = new Semaphore(1, true);
+    Stuff.east = new Semaphore(0, true);
+    Stuff.west = new Semaphore(0, true);
 
     // Create several instances of Car threads
     Car C;  // C can hold an instance of class Car
-    Synch.traffic = true;
+    Stuff.traffic = true;
     Light L = new Light();
     L.start();
 

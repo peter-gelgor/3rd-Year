@@ -22,11 +22,11 @@ public class Reader extends Thread {
 
   public void run() {
     for (int I = 0; I < 5; I++) {
-      System.out.println("Reader " + myName + " wants to read.  " + "Beforehand, readcount is " + Synch.readcount);
+      System.out.println("Reader " + myName + " wants to read.  " + "Beforehand, readcount is " + Stuff.readcount);
 
       // Acquire the semaphore for reading (writers block it).
       try {
-        Synch.readBlock.acquire();
+        Stuff.readBlock.acquire();
       } catch (InterruptedException e1) {
         // TODO Auto-generated catch block
         e1.printStackTrace();
@@ -34,24 +34,24 @@ public class Reader extends Thread {
       // Do acquire on the "mutex" semaphore, to get exclusive access to the
       // variable "Synch.readcount".
       try {
-        Synch.mutex.acquire();
+        Stuff.mutex.acquire();
       } catch (Exception e) {
       }
       // If a writer is active, the first reader waits for "wrt" while still
       // holding on to "mutex". Other readers, who arrive later, will get
       // held up waiting for "mutex".
-      Synch.readcount++;
-      if (Synch.readcount == 1) {
+      Stuff.readcount++;
+      if (Stuff.readcount == 1) {
         try {
           // while (Synch.writerQueue > 0) {}
-          Synch.wrt.acquire();
+          Stuff.wrt.acquire();
         } catch (Exception e) {
         }
       }
       // Now we have permission to start reading.
       // Print a message and release mutex.
-      System.out.println("Reader " + myName + " is now reading.  " + "Readcount is " + Synch.readcount);
-      Synch.mutex.release();
+      System.out.println("Reader " + myName + " is now reading.  " + "Readcount is " + Stuff.readcount);
+      Stuff.mutex.release();
 
       // Simulate the time taken for reading
       rSleep.doSleep(1, 200);
@@ -61,16 +61,16 @@ public class Reader extends Thread {
       // a waiting writer, or set the semaphore value to 1, so that a future
       // writer or reader can go without waiting.
       try {
-        Synch.mutex.acquire();
+        Stuff.mutex.acquire();
       } catch (Exception e) {
       }
-      Synch.readcount--;
+      Stuff.readcount--;
       System.out
-          .println("Reader " + myName + " is finished reading.  " + "Readcount decremented to " + Synch.readcount);
-      if (Synch.readcount == 0)
-        Synch.wrt.release();
-      Synch.mutex.release();
-      Synch.readBlock.release();
+          .println("Reader " + myName + " is finished reading.  " + "Readcount decremented to " + Stuff.readcount);
+      if (Stuff.readcount == 0)
+        Stuff.wrt.release();
+      Stuff.mutex.release();
+      Stuff.readBlock.release();
 
       // Simulate "doing something else".
       rSleep.doSleep(1, 1000);

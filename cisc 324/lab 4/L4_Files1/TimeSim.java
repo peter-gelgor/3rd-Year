@@ -95,7 +95,7 @@ public class TimeSim {
             System.out.println("Error: threadEnd called more often than threadStart!");
         numThreads--;
         threadsComputing--;
-        if (Synch.debug>=2)
+        if (Stuff.debug>=2)
             System.out.println("A thread has ended.  There are " + numThreads
                    + " threads left, and " + threadsComputing
                    + " of these are computing now, at time " + time);
@@ -126,7 +126,7 @@ public class TimeSim {
         	System.out.println(e);
         }
         threadsComputing--;
-        if (Synch.debug>=2)
+        if (Stuff.debug>=2)
             System.out.println("At time "+time+", a thread computation is done." + threadsComputing + " threads are still computing");
         if (threadsComputing<0) {
             System.out.println("Error in timeSim: inconsistent number of threads.  ");
@@ -145,7 +145,7 @@ public class TimeSim {
     public void threadComputationStarting() {
     	
         threadsComputing++;
-        if (Synch.debug>=2)
+        if (Stuff.debug>=2)
             System.out.println("At time "+time+" a thread computation is starting. " + threadsComputing + " threads are now computing");
         
     }
@@ -185,7 +185,7 @@ public class TimeSim {
             eventIndex++;
 
         events[eventIndex].wakeupTime = waketime;
-        if (Synch.debug>=2) {
+        if (Stuff.debug>=2) {
             System.out.print("List of event wakeupTimes after doSleep("+n+"):");
             for (int j=0; j<MAX_EVENTS; j++) {
                 if (events[j].wakeupTime!=-1)
@@ -208,7 +208,7 @@ public class TimeSim {
     // The caller already holds timeMutex.
 
     private void advanceTime() {
-        if (Synch.debug>=3)
+        if (Stuff.debug>=3)
             System.out.println("starting advanceTime");
 
         // Find the smallest wakeupTime in events.
@@ -229,7 +229,7 @@ public class TimeSim {
                     events[i].sem.release();
                 }
             }
-            if (Synch.debug>=1) {
+            if (Stuff.debug>=1) {
                 System.out.print("Advanced time to "+time+". Remaining wakeupTimes are:");
                 for (int j=0; j<MAX_EVENTS; j++) {
                     if (events[j].wakeupTime!=-1)
